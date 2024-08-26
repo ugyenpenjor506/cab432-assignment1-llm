@@ -19,7 +19,7 @@ class Color:
 openai.api_key =  "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"
 
 # Load documents from a file
-file_path = "expirement_dataset.pdf"
+file_path = "AI_Russell_Norvig.pdf"
 documents = SimpleDirectoryReader(input_files=[file_path]).load_data()
 
 # Create a document by concatenating text from all loaded documents
