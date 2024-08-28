@@ -1,11 +1,9 @@
-import os
 import openai
 import textwrap
 from llama_index.core import Document
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
 from llama_index.core.service_context import ServiceContext
 from llama_index.llms.openai import OpenAI
-
 
 
 class Color:
@@ -16,10 +14,10 @@ class Color:
     RESET = '\033[0m'
 
 # Setup API key securely
-openai.api_key =  "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"
+openai.api_key = ""
 
 # Load documents from a file
-file_path = "AI_Russell_Norvig.pdf"
+file_path = "dummy_ict_company_data.pdf"
 documents = SimpleDirectoryReader(input_files=[file_path]).load_data()
 
 # Create a document by concatenating text from all loaded documents
@@ -34,14 +32,25 @@ service_context = ServiceContext.from_defaults(
 index = VectorStoreIndex.from_documents([document], service_context=service_context)
 query_engine = index.as_query_engine()
 
+def cpu_intensive_task(n):
+    result = 0
+    for i in range(n):
+        for j in range(n):
+            result += i * j
+    return result
+
 # Main loop to handle queries from the user
 while True:
-    
     user_input = input(Color.YELLOW + "🤖 Enter your query (type 'quit' to exit): " + Color.RESET)
     
     if user_input.lower() == 'quit':
         print("Exiting...")
         break
+    
+    # Introduce a CPU-intensive task before processing the query
+    print(Color.BLUE + "Performing CPU-intensive calculations..." + Color.RESET)
+    cpu_result = cpu_intensive_task(10000)  # Adjust the number for higher CPU usage
+    print(Color.BLUE + f"Result of CPU-intensive task: {cpu_result}" + Color.RESET)
     
     if query_engine:
         response = query_engine.query(user_input)
