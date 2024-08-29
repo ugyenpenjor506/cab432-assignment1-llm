@@ -4,9 +4,6 @@ FROM python:3.9
 # Set the working directory inside the container
 WORKDIR /LLMAPP
 
-# Set environment variable for OpenAI API Key
-ENV OPENAI_API_KEY=${OPENAI_API_KEY}
-
 # Copy the requirements file and install dependencies
 ADD requirements.txt /LLMAPP
 RUN pip3 install -r requirements.txt
