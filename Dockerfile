@@ -1,12 +1,12 @@
 # Use Python 3.9 as the base image
-FROM python:3.9
+FROM python:3.9-slim
 
 # Set the working directory inside the container
 WORKDIR /LLMAPP
 
 # Copy the requirements file and install dependencies
 ADD requirements.txt /LLMAPP
-RUN pip3 install -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code into the container
 ADD . /LLMAPP
