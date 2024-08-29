@@ -1,3 +1,4 @@
+import os
 import openai
 import textwrap
 from llama_index.core import Document
@@ -13,8 +14,11 @@ class Color:
     BLUE = '\033[94m'
     RESET = '\033[0m'
 
-# Setup API key securely
-openai.api_key = ""
+# Setup API key securely from environment variable
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+if openai.api_key is None:
+    raise ValueError("OPENAI_API_KEY environment variable is not set.")
 
 # Load documents from a file
 file_path = "dummy_ict_company_data.pdf"
@@ -32,11 +36,13 @@ service_context = ServiceContext.from_defaults(
 index = VectorStoreIndex.from_documents([document], service_context=service_context)
 query_engine = index.as_query_engine()
 
-def cpu_intensive_task(n):
+def cpu_intensive_query_processing(response_text):
+    # Simulating a CPU-intensive text processing task
     result = 0
-    for i in range(n):
-        for j in range(n):
-            result += i * j
+    for _ in range(5000):
+        # Perform complex string manipulations or other CPU-intensive operations
+        result += sum(ord(char) for char in response_text)
+        response_text = response_text[::-1]  # Reverse the text as a mock operation
     return result
 
 # Main loop to handle queries from the user
@@ -47,14 +53,15 @@ while True:
         print("Exiting...")
         break
     
-    # Introduce a CPU-intensive task before processing the query
-    print(Color.BLUE + "Performing CPU-intensive calculations..." + Color.RESET)
-    cpu_result = cpu_intensive_task(10000)  # Adjust the number for higher CPU usage
-    print(Color.BLUE + f"Result of CPU-intensive task: {cpu_result}" + Color.RESET)
-    
     if query_engine:
         response = query_engine.query(user_input)
         response_text = str(response)
+        
+        # Introduce a CPU-intensive task related to query processing
+        print(Color.BLUE + "Performing CPU-intensive query processing..." + Color.RESET)
+        cpu_result = cpu_intensive_query_processing(response_text)
+        print(Color.BLUE + f"Result of CPU-intensive query processing: {cpu_result}" + Color.RESET)
+        
         line_width = 70
         wrapped_response = textwrap.fill(response_text, width=line_width)
         print(Color.GREEN + wrapped_response + Color.RESET)
