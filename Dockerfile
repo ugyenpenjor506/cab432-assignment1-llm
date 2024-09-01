@@ -1,3 +1,25 @@
+# # Use Python 3.9 as the base image
+# FROM python:3.9-slim
+
+# # Set the working directory inside the container
+# WORKDIR /LLMAPP
+
+# # Copy the requirements file and install dependencies
+# ADD requirements.txt /LLMAPP
+# RUN pip3 install --no-cache-dir -r requirements.txt
+
+# # Copy the rest of the application code into the container
+# ADD . /LLMAPP
+
+# # Expose the correct port (5005) that the Flask app will run on
+# EXPOSE 5005
+
+# # Set the entry point to run the Flask app
+# ENTRYPOINT ["python3"]
+# CMD ["main.py"]
+
+
+
 # Use Python 3.9 as the base image
 FROM python:3.9-slim
 
@@ -5,15 +27,14 @@ FROM python:3.9-slim
 WORKDIR /LLMAPP
 
 # Copy the requirements file and install dependencies
-ADD requirements.txt /LLMAPP
+COPY requirements.txt /LLMAPP/
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code into the container
-ADD . /LLMAPP
+COPY . /LLMAPP/
 
 # Expose the correct port (5005) that the Flask app will run on
 EXPOSE 5005
 
 # Set the entry point to run the Flask app
-ENTRYPOINT ["python3"]
-CMD ["main.py"]
+CMD ["python3", "main.py"]

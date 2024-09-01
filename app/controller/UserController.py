@@ -1,9 +1,15 @@
 from app import app
+import jwt
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
+import datetime
+from flask_cors import CORS
 
 from app.model.Model import db, User
+
+# Enable CORS for all routes
+CORS(app)
 
 class UserController:
     
@@ -52,3 +58,50 @@ class UserController:
                 "status": "fail",
                 "code": 500
             }), 500
+            
+
+    
+    @app.route('/login', methods=['POST'])
+    def login():
+        SECRET_KEY = 'hg54376*6'
+        data = request.get_json()
+        username_or_email = data.get('username_or_email')
+        password = data.get('password')
+
+        if not username_or_email or not password:
+            return jsonify({
+                "error": "Username/email and password are required",
+                "status": "fail",
+                "code": 400
+            }), 400
+
+        # Check if the user exists by username or email
+        user = User.query.filter((User.UserName == username_or_email) | (User.UserEmail == username_or_email)).first()
+
+        if user and check_password_hash(user.Password, password):
+            # Login successful, generate JWT token
+            token = jwt.encode({
+                'user_id': user.UserID,
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+            }, SECRET_KEY, algorithm="HS256")
+
+            # Return user information except for the password
+            return jsonify({
+                "message": "Login successful",
+                "status": "success",
+                "code": 200,
+                "token": token,
+                "user": {
+                    "UserID": user.UserID,
+                    "UserName": user.UserName,
+                    "UserEmail": user.UserEmail,
+                    "CreatedAt": user.CreatedAt.isoformat()  # Convert datetime to string
+                }
+            }), 200
+        else:
+            # Login failed
+            return jsonify({
+                "error": "Invalid username/email or password",
+                "status": "fail",
+                "code": 401
+            }), 401

@@ -6,6 +6,12 @@ from llama_index.core.service_context import ServiceContext
 from llama_index.llms.openai import OpenAI
 import textwrap
 from flask import jsonify
+from app.service.DatabaseService import DatabaseService
+
+from dotenv import load_dotenv
+load_dotenv()
+
+api_key = os.getenv('OPENAI_API_KEY')
 
 class ApiService:
     
@@ -19,10 +25,11 @@ class ApiService:
             response_text = response_text[::-1]  # Reverse the text as a mock operation
         return result
     
-    def openai_api(self, user_input):
+    def openai_api(self, user_input, conversation_id, query_id):
+        
         try:
             # Setup API key securely from environment variable
-            openai.api_key = os.getenv("OPENAI_API_KEY")
+            openai.api_key = api_key
 
             if openai.api_key is None:
                 return jsonify({"status": "error", "code": 500, "message": "OPENAI_API_KEY environment variable is not set."}), 500
@@ -55,6 +62,8 @@ class ApiService:
 
                 line_width = 70
                 wrapped_response = textwrap.fill(response_text, width=line_width)
+                
+                databaseService.create_response(conversation_id, query_id, response_text)
                 return jsonify({
                     "status": "success",
                     "code": 200,
@@ -73,4 +82,5 @@ class ApiService:
         return None
 
 
-apiService = ApiService   
+apiService = ApiService()   
+databaseService = DatabaseService()
