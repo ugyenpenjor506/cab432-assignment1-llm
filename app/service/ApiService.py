@@ -10,7 +10,6 @@ from app.service.DatabaseService import DatabaseService
 
 from dotenv import load_dotenv
 load_dotenv()
-
 api_key = os.getenv('OPENAI_API_KEY')
 
 class ApiService:
