@@ -34,7 +34,7 @@ class ApiService:
                 return jsonify({"status": "error", "code": 500, "message": "OPENAI_API_KEY environment variable is not set."}), 500
 
             # Load documents from a file
-            file_path = "experiment-dataset1.pdf"
+            file_path = "experiment-dataset.pdf"
             if not os.path.exists(file_path):
                 return jsonify({"status": "error", "code": 404, "message": f"File not found: {file_path}"}), 404
 
